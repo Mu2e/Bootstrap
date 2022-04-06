@@ -18,6 +18,7 @@
 :set list
 " don't distract open menu with 'hidden' files
 :let g:netrw_list_hide= '.*\.swp$,*\.os$,*\.C_d'
+" highlght search hits
 :hi Search term=reverse ctermbg=7
 " Tell vim where to look for #include files
 :set path =.,Offline,Production,$MUSE_BUILD_BASE,,
