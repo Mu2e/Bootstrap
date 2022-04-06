@@ -24,7 +24,7 @@
 :set path =.,Offline,Production,$MUSE_BUILD_BASE,,
 " enable syntax color highlighting (language specific)
 :syntax enable
-:" use latex for tex
+" use latex for tex
 :let g:tex_flavor = "latex"
 " c++
 au BufNewFile,BufRead *.cpp,*.cc,*.C set syntax=cpp
