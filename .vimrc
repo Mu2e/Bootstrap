@@ -32,7 +32,7 @@
 :autocmd BufNewFile,BufRead *.fcl,*.fhicl set syntax=perl
 " check whitespace on exit
 :autocmd BufWritePre * :%s/\s\+$//e
-" hilite whitespace
+" highlight whitespace
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 " let Vim auto-indent by filetype
 :set autoindent
