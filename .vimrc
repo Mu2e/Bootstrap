@@ -27,10 +27,10 @@
 " use latex for tex
 :let g:tex_flavor = "latex"
 " c++ file recognition
-autocmd  BufNewFile,BufRead *.cpp,*.cc,*.C set syntax=cpp
+:autocmd  BufNewFile,BufRead *.cpp,*.cc,*.C set syntax=cpp
 " use perl mode for fcl files; this gets the syntax highlighting and brace matching correct
 :autocmd BufNewFile,BufRead *.fcl,*.fhicl set syntax=perl
-" check whitespice on exit
+" check whitespace on exit
 :autocmd BufWritePre * :%s/\s\+$//e
 " hilite whitespace
 :autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
