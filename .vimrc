@@ -26,12 +26,14 @@
 :syntax enable
 " use latex for tex
 :let g:tex_flavor = "latex"
-" c++
-au BufNewFile,BufRead *.cpp,*.cc,*.C set syntax=cpp
+" c++ file recognition
+autocmd  BufNewFile,BufRead *.cpp,*.cc,*.C set syntax=cpp
 " use perl mode for fcl files; this gets the syntax highlighting and brace matching correct
-:au BufNewFile,BufRead *.fcl,*.fhicl set syntax=perl
+:autocmd BufNewFile,BufRead *.fcl,*.fhicl set syntax=perl
 " check whitespice on exit
 :autocmd BufWritePre * :%s/\s\+$//e
+" hilite whitespace
+:autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
 " let Vim auto-indent by filetype
 :set autoindent
 :set smartindent
