@@ -36,6 +36,18 @@
 (add-hook 'sh-mode-hook
           '(lambda ()
              (setq indent-tabs-mode nil)))
+(add-hook 'python-mode-hook
+            '(lambda ()
+                    (whitespace-mode)))
+(add-hook 'python-mode-hook
+          '(lambda ()
+             (setq indent-tabs-mode nil)))
+(add-hook 'perl-mode-hook
+            '(lambda ()
+                    (whitespace-mode)))
+(add-hook 'perl-mode-hook
+          '(lambda ()
+             (setq indent-tabs-mode nil)))
 (add-hook 'latex-mode-hook
             '(lambda ()
                     (whitespace-mode)))
