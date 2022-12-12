@@ -20,4 +20,5 @@ fi
 #
 if [ -f "${HOME}/.bashrc" ]; then
     source "${HOME}/.bashrc"
+    export BASH_ENV="${HOME}/.bashrc"
 fi
