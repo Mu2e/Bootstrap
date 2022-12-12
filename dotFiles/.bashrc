@@ -12,6 +12,15 @@ case "$-" in
         ;;
 esac
 
+#
+# system configuration
+#
+if [ -f "/etc/bashrc" ]; then
+    source "/etc/bashrc"
+fi
+#
+# user configuration
+#
 if [ -f "${HOME}/.my_bashrc" ]; then
     source "${HOME}/.my_bashrc"
 fi
