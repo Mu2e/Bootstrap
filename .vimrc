@@ -3,6 +3,7 @@
 :set shiftwidth=2
 :set tabstop=2
 :set expandtab
+:set hidden
 " turn on cursor column and row listing
 :set ruler
 " configure window status info
@@ -21,7 +22,8 @@
 " highlght search hits
 :hi Search term=reverse ctermbg=7
 " Tell vim where to look for #include files
-:set path =.,Offline,Production,$MUSE_BUILD_BASE,,
+:set path +=$MUSE_BUILD_BASE
+:set path +=$MUSE_BACKING
 " enable syntax color highlighting (language specific)
 :syntax enable
 " use latex for tex
