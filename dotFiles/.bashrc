@@ -6,7 +6,7 @@
 # so that it is also effective for login shells.
 #
 # Alias to create the Mu2e working environment in a shell.
-alias setup-mu2e=". /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh"
+alias setup-mu2e="source /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh"
 
 case "$-" in
 *i*)	# These commands executed for interactive shells
