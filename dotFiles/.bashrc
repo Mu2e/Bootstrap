@@ -1,4 +1,5 @@
 # Example .bashrc file for use by Mu2e accounts at Fermilab
+#
 #     See: https://mu2ewiki.fnal.gov/wiki/Shells#Setup_scripts
 #
 # This file will be sourced at the start of all shells that are interactive
@@ -6,7 +7,7 @@
 # so that it is also effective for login shells.
 #
 # Alias to create the Mu2e working environment in a shell.
-alias setup-mu2e="source /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh"
+alias mu2einit="source /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh"
 
 case "$-" in
 *i*)	# These commands executed for interactive shells
@@ -18,7 +19,7 @@ case "$-" in
 esac
 
 #
-# system configuration - required to get jobsub and other Fermi supplied
+# system configuration - required to get jobsub and other Fermi supplied software.
 #
 if [ -f "/etc/bashrc" ]; then
     source "/etc/bashrc"
