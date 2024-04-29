@@ -7,7 +7,6 @@
 #
 if [ -f "${HOME}/.bashrc" ]; then
     source "${HOME}/.bashrc"
-    export BASH_ENV="${HOME}/.bashrc"
 fi
 #
 # If you wish to add your own configuration we recommend you do so in

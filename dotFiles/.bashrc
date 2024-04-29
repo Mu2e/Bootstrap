@@ -6,9 +6,14 @@
 # but not login shells.  We recommend that you source it in .bash_profile
 # so that it is also effective for login shells.
 #
-# Alias to create the Mu2e working environment in a shell.
+
+# Make sure that all subshells get this environment.
+export BASH_ENV="${HOME}/.bashrc"
+
+# Alias to create the Mu2e working environment in the current shell.
 alias mu2einit="source /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh"
 
+# Some recommended safety settings.
 case "$-" in
 *i*)	# These commands executed for interactive shells
         set -o noclobber            #prevent overwrite when redirecting output
