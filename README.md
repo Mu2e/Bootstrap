@@ -9,7 +9,7 @@ Files:
 1. dotfiles/.bashrc
 
 For a discussion of how to use these files, see
-[https://mu2ewiki.fnal.gov/wiki/Shells](https://mu2ewiki.fnal.gov/wiki/Shells) for a d
+[https://mu2ewiki.fnal.gov/wiki/Shells](https://mu2ewiki.fnal.gov/wiki/Shells).
 
 ## Editor initialization scripts
 
@@ -25,7 +25,7 @@ of the editor.  Users are free to edit their private copies of these files, but 
 repo should not be changed without first discussing with the Computing Coordinators.
 
 For a discussion about what the recommended configurations do, see
-[https://mu2ewiki.fnal.gov/wiki/Editors](https://mu2ewiki.fnal.gov/wiki/Editors)
+[https://mu2ewiki.fnal.gov/wiki/Editors](https://mu2ewiki.fnal.gov/wiki/Editors).
 
 ## gdb initialization scripts
 
@@ -34,4 +34,4 @@ Files:
 1. dotfiles/.gdb_stl
 
 For a discussion of debugging with gdb, see
-[https://mu2ewiki.fnal.gov/wiki/CodeDebugging#gdb](https://mu2ewiki.fnal.gov/wiki/CodeDebugging#gdb)
+[https://mu2ewiki.fnal.gov/wiki/CodeDebugging#gdb](https://mu2ewiki.fnal.gov/wiki/CodeDebugging#gdb).
