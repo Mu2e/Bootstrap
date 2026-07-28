@@ -1331,6 +1331,17 @@ def resolve_settings(args, parser):
     if settings["layout"] is None:
         settings["layout"] = "include" if supports_include(plat) else "monolithic"
 
+    if settings["layout"] not in ("include", "monolithic"):
+        fail("layout must be 'include' or 'monolithic' (got %r)" % settings["layout"])
+    if settings["gateway_precedence"] not in ("daq", "shift"):
+        fail(
+            "gateway_precedence must be 'daq' or 'shift' (got %r)" % settings["gateway_precedence"]
+        )
+    if settings["strict_host_key_checking"] not in ("yes", "no", "ask", "accept-new"):
+        fail(
+            "strict_host_key_checking must be one of yes,no,ask,accept-new (got %r)"
+            % settings["strict_host_key_checking"]
+        )
     if settings["features"]["keychain"] and plat != "macos":
         warn("UseKeychain is a macOS feature; disabling it for %s" % platform_label(plat))
         settings["features"]["keychain"] = False
