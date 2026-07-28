@@ -29,14 +29,29 @@ rem reliable way to reach a real Python 3 on Windows. Fall back to python.exe,
 rem which on a stock Windows 11 may be the Microsoft Store stub.
 where py >nul 2>&1
 if %ERRORLEVEL% equ 0 (
-    py -3 "%SCRIPT%" %*
-    exit /b %ERRORLEVEL%
+    py -3 -c "import sys; sys.exit(0 if sys.version_info[:2] >= (3, 9) else 1)" >nul 2>&1
+    if %ERRORLEVEL% equ 0 (
+        py -3 "%SCRIPT%" %*
+        exit /b %ERRORLEVEL%
+    )
+)
+
+where python3 >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    python3 -c "import sys; sys.exit(0 if sys.version_info[:2] >= (3, 9) else 1)" >nul 2>&1
+    if %ERRORLEVEL% equ 0 (
+        python3 "%SCRIPT%" %*
+        exit /b %ERRORLEVEL%
+    )
 )
 
 where python >nul 2>&1
 if %ERRORLEVEL% equ 0 (
-    python "%SCRIPT%" %*
-    exit /b %ERRORLEVEL%
+    python -c "import sys; sys.exit(0 if sys.version_info[:2] >= (3, 9) else 1)" >nul 2>&1
+    if %ERRORLEVEL% equ 0 (
+        python "%SCRIPT%" %*
+        exit /b %ERRORLEVEL%
+    )
 )
 
 echo. 1>&2
