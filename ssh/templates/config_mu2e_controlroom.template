@@ -1,0 +1,22 @@
+#@ ---------------------------------------------------------------------------
+#@ Mu2e control room host group -- shifter access only.
+#@
+#@ NOTE: this group claims "Host mu2egateway*" for the @@SHIFT_ACCOUNT@@
+#@ account.  The mu2edaq group claims the same pattern for @@DAQ_ACCOUNT@@.
+#@ ssh uses the first match, so whichever group is listed first in ~/.ssh/config
+#@ wins for the gateways.  mu2e-ssh-setup warns if you enable both.
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Mu2e MC-1 control room (shifter access)
+# ---------------------------------------------------------------------------
+
+##############################
+# Gateway machines required to reach the MC-2 / MC-1 machines
+Host mu2egateway*
+        User @@SHIFT_ACCOUNT@@
+
+##############################
+# Mu2e MC-1 control room nodes
+Host mu2e-mc1-cr-*
+        User @@SHIFT_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@

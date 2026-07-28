@@ -1,0 +1,58 @@
+#@ ---------------------------------------------------------------------------
+#@ Mu2e offline GPVM nodes -- interactive analysis machines.
+#@
+#@ These are Kerberos-only: the GSSAPI settings below are emitted whether or not
+#@ the global 'gssapi' feature is on, because without a ticket you cannot log in
+#@ to these hosts at all.  mu2e-ssh-setup warns if you disable gssapi globally
+#@ while this group is enabled.
+#@
+#@ ssh Host patterns understand only * ? and !, NOT character ranges: writing
+#@ "mu2egpvm0[1-7]" matches nothing.  Hence the trailing wildcard, which also
+#@ conveniently matches both the bare name and the FQDN.
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Mu2e offline GPVM nodes
+#
+# General purpose VMs for offline analysis, code building and grid job
+# submission.  As of this writing the pool is:
+#
+#     mu2egpvm01.fnal.gov ... mu2egpvm07.fnal.gov
+#
+# The pattern below is a wildcard rather than a list, so nodes added later are
+# picked up without regenerating this file.
+#
+# These machines require Kerberos.  Get a ticket first:
+#
+#     kinit @@KERBEROS_PRINCIPAL@@
+#     ssh mu2egpvm01
+#
+# If ssh asks for a password, your ticket is missing or expired -- check with
+# klist.  There is no ssh key that will get you in.
+# ---------------------------------------------------------------------------
+
+Host mu2egpvm*
+        User @@FNAL_USER@@
+
+        # Kerberos is the only accepted authentication on these nodes.
+        # Delegating the credential lets you reach dCache, jobsub and the
+        # onward Fermilab hosts from the gpvm without running kinit again.
+        GSSAPIAuthentication    yes
+        GSSAPIDelegateCredentials yes
+        # Re-delegate when you refresh a ticket with kinit -R during a long
+        # session, so an all-day login does not lose its credential.
+        GSSAPIRenewalForcesRekey yes
+        PreferredAuthentications gssapi-with-mic,gssapi-keyex,keyboard-interactive
+
+        # Deliberately NOT forwarding the agent, even when the global 'agent'
+        # feature is on.  A gpvm is a shared multi-user machine, and a forwarded
+        # agent socket can be used by anyone who can read it, including root, for
+        # as long as you stay logged in.  The delegated Kerberos credential above
+        # already covers onward hops, so nothing is lost here.  If you genuinely
+        # need agent forwarding (for example to push to GitHub from a gpvm), put
+        # an override in @@SSH_DIR@@/config_other and regenerate with
+        # --user-config-first.
+        ForwardAgent            no
+#@if x11
+        ForwardX11              yes
+        ForwardX11Trusted       yes
+#@endif

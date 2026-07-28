@@ -1,0 +1,31 @@
+#@ ---------------------------------------------------------------------------
+#@ DUNE offline GPVM nodes.  Kerberos-only, same rules as the Mu2e gpvms.
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# DUNE offline GPVM nodes
+#
+# General purpose VMs for DUNE offline analysis:
+#
+#     dunegpvm01.fnal.gov ... dunegpvm16.fnal.gov
+#
+# Kerberos is required:
+#
+#     kinit @@KERBEROS_PRINCIPAL@@
+#     ssh dunegpvm01
+# ---------------------------------------------------------------------------
+
+Host dunegpvm*
+        User @@FNAL_USER@@
+
+        GSSAPIAuthentication    yes
+        GSSAPIDelegateCredentials yes
+        GSSAPIRenewalForcesRekey yes
+        PreferredAuthentications gssapi-with-mic,gssapi-keyex,keyboard-interactive
+
+        # Not forwarded: shared multi-user machine.  See the comment in the Mu2e
+        # gpvm section for the reasoning.
+        ForwardAgent            no
+#@if x11
+        ForwardX11              yes
+        ForwardX11Trusted       yes
+#@endif
