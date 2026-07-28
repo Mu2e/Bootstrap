@@ -1,0 +1,524 @@
+.\" Manpage for mu2e-ssh-setup
+.\" Install with: cp mu2e-ssh-setup.1 /usr/local/share/man/man1/
+.TH MU2E\-SSH\-SETUP 1 "2026-07-28" "mu2e-ssh-setup 1.0.0" "Mu2e DAQ Manual"
+.
+.SH NAME
+mu2e\-ssh\-setup \- generate a personalized Mu2e DAQ ssh client configuration
+.
+.SH SYNOPSIS
+.B mu2e\-ssh\-setup
+.RB [ \-\-interactive | \-\-batch ]
+.RB [ \-\-dry\-run ]
+.RB [ \-\-install ]
+.RB [ \-\-fnal\-user
+.IR NAME ]
+.RB [ \-\-key\-default
+.IR PATH ]
+.RB [ \-\-layout
+.IR LAYOUT ]
+.RI [ options ]
+.
+.SH DESCRIPTION
+.B mu2e\-ssh\-setup
+builds an ssh client configuration for the Mu2e DAQ machines from the templates
+in
+.IR templates/ ,
+substituting the user's account names and key paths.
+The generated configuration teaches
+.BR ssh (1)
+about the Mu2e gateways, the MC\-2 and MC\-1 nodes, the IERC test stands and the
+git servers, so that a command such as
+.B ssh mu2edaq09
+connects through the correct gateway as the correct user with the correct key.
+.PP
+The templates themselves contain no personal information and are safe to keep in
+version control.
+.PP
+The script runs on macOS, Linux and Windows with any Python 3.9 or newer, and
+requires no third\-party modules.
+.BR PyYAML (3)
+is used for
+.B \-\-config\-file
+when present; otherwise a built\-in parser handles the same file.
+.
+.SS Output modes
+Three modes control where the result is left.
+.TP
+.B \-\-dry\-run
+Print the plan. Nothing is written anywhere.
+.TP
+.I (default)
+Write to
+.I ./mu2e\-ssh\-config
+for inspection. The live ssh directory is not touched.
+.TP
+.B \-\-install
+Write into the live ssh directory, backing up anything already present.
+.PP
+.B \-\-install
+is the only mode that can alter an existing configuration, and it backs up
+first. See
+.B SAFETY
+below.
+.
+.SS Layouts
+.TP
+.B include
+A main
+.I config
+plus one file per host group, pulled in with the
+.B Include
+keyword. Requires OpenSSH 7.3 or newer. This is the default on macOS and Linux.
+.TP
+.B monolithic
+A single self\-contained
+.IR config .
+Required by clients that do not implement
+.BR Include ,
+such as PuTTY and older Git\-for\-Windows bundles. This is the default on
+Windows.
+.
+.SH OPTIONS
+.SS Mode
+.TP
+.BR \-i ", " \-\-interactive
+Prompt for each setting. This is the default when no identifying option is
+given.
+.TP
+.B \-\-batch
+Never prompt. Fail if a required value is missing.
+.TP
+.BR \-n ", " \-\-dry\-run
+Show what would be written and change nothing on disk. Takes precedence over
+.BR \-\-install .
+.TP
+.B \-\-install
+Write into the ssh directory rather than staging in
+.IR ./mu2e\-ssh\-config .
+.TP
+.B \-\-diff
+With
+.BR \-\-dry\-run ,
+show a unified diff against the existing files.
+.TP
+.B \-\-print
+With
+.BR \-\-dry\-run ,
+print the generated files in full.
+.
+.SS Accounts
+.TP
+.BI \-\-fnal\-user " NAME"
+Fermilab services username. Required unless running interactively.
+.TP
+.BI \-\-github\-user " NAME"
+GitHub username. Defaults to
+.BR \-\-fnal\-user .
+Used only in a comment, since
+.I github.com
+always authenticates as the ssh user
+.BR git .
+.TP
+.BI \-\-daq\-account " NAME"
+Shared account on the DAQ machines. Default
+.BR mu2edaq .
+.TP
+.BI \-\-shift\-account " NAME"
+Shared account for control room shifts. Default
+.BR mu2eshift .
+.TP
+.BI \-\-dcs\-account " NAME"
+Shared account on the DCS nodes. Default
+.BR mu2edcs .
+.
+.SS Key files
+Paths must name the
+.B private
+key, that is the file
+.I without
+the
+.I .pub
+suffix.
+.TP
+.BI \-\-key\-default " PATH"
+Key used for the Mu2e DAQ hosts. If omitted, the script looks for
+.IR id_ed25519 ,
+.I id_rsa
+or
+.I id_ecdsa
+under
+.I ~/.ssh/keys/default
+and then
+.IR ~/.ssh .
+.TP
+.BI \-\-key\-github " PATH"
+Key for
+.IR github.com .
+Defaults to
+.BR \-\-key\-default .
+.TP
+.BI \-\-key\-fnal " PATH"
+Key for
+.IR hepcloud\-git.fnal.gov .
+Defaults to
+.BR \-\-key\-default .
+.TP
+.B \-\-no\-verify\-keys
+Do not check that the key files exist. Useful when preparing a configuration for
+a machine whose keys are not yet in place.
+.
+.SS Layout and paths
+.TP
+.BI \-\-layout " {include,monolithic}"
+Output layout. Default
+.B include
+except on Windows, where it is
+.BR monolithic .
+.TP
+.BI \-\-groups " LIST"
+Comma\-separated host groups to enable:
+.BR mu2edaq ,
+.BR controlroom ,
+.BR mu2egpvm ,
+.BR novagpvm ,
+.BR dunegpvm ,
+.BR github .
+Default
+.BR mu2edaq,mu2egpvm,github .
+The three
+.B gpvm
+groups configure the offline interactive nodes
+.RI ( mu2egpvm01\-07 ,
+.IR novagpvm01\-12 ,
+.IR dunegpvm01\-16 ),
+which are reached directly, as the user's own account, and accept
+.B only
+Kerberos authentication. Their blocks therefore request GSSAPI even under
+.BR \-\-no\-gssapi ,
+and the agent is not forwarded to them because they are shared multi\-user
+machines.
+.TP
+.B \-\-all\-groups
+Enable every host group.
+.TP
+.BI \-\-gateway\-precedence " {daq,shift}"
+When both the
+.B mu2edaq
+and
+.B controlroom
+groups are enabled, both match
+.RB \(lq Host
+.BR mu2egateway* \(rq
+with different accounts.
+.BR ssh (1)
+honours the first match; this selects which. Default
+.BR daq .
+.TP
+.B \-\-user\-config\-first
+Include
+.I config_other
+before the Mu2e groups so that the user's own settings take precedence.
+.TP
+.BI \-\-ssh\-dir " DIR"
+The ssh directory the generated files refer to. Default
+.IR ~/.ssh .
+.TP
+.BI \-\-output\-dir " DIR"
+Where to write. Default
+.IR ./mu2e\-ssh\-config ,
+or the ssh directory with
+.BR \-\-install .
+.TP
+.BI \-\-backup\-dir " DIR"
+Where to place backups. Default
+.IR <ssh\-dir>/backup\-<timestamp> .
+.TP
+.B \-\-no\-backup
+Do not back up existing files. Intended for scripted rebuilds of disposable
+machines.
+.TP
+.B \-\-force
+Do not ask before replacing existing files. Required by
+.B \-\-batch
+when files are already present.
+.TP
+.BI \-\-templates\-dir " DIR"
+Directory holding the
+.I .template
+files. Default
+.I templates/
+beside the script.
+.TP
+.BI \-c ", " \-\-config\-file " FILE"
+Read settings from a YAML file. See
+.B FILES
+below.
+.
+.SS Host settings
+.TP
+.BI \-\-mc2\-gateway " HOST"
+Gateway for the MC\-2 machines. Default
+.IR mu2egateway01.fnal.gov .
+.TP
+.BI \-\-ierc\-gateway " HOST"
+Gateway for the IERC test stands. Default
+.IR mu2edaq\-gateway.fnal.gov .
+.TP
+.BI \-\-kerberos\-realm " REALM"
+Realm used to build the example
+.BR kinit (1)
+command in the comments of the gpvm files. Default
+.BR FNAL.GOV .
+This does not affect authentication, which takes the realm from
+.IR /etc/krb5.conf .
+.TP
+.BI \-\-canonical\-domain " DOMAIN"
+Domain appended to bare hostnames. Default
+.IR fnal.gov .
+.TP
+.BI \-\-strict\-host\-key\-checking " {yes,no,ask,accept\-new}"
+.B StrictHostKeyChecking
+policy for the generated configuration. Default
+.BR accept\-new ,
+which trusts a host key on first use and refuses it if it later changes.
+.
+.SS Features
+Each feature has a negative form, for example
+.BR \-\-no\-x11 .
+.TP
+.B \-\-keychain
+Store key passphrases in the macOS keychain. On by default on macOS, forced off
+elsewhere.
+.TP
+.B \-\-gssapi
+Kerberos/GSSAPI authentication to fnal.gov hosts. On by default.
+.TP
+.B \-\-x11
+X11 forwarding, needed for otsdaq GUIs and DAQ Interface windows. On by default.
+.TP
+.B \-\-agent
+Forward the ssh agent to remote hosts, so that an onward hop from a gateway can
+use the same key. On by default.
+.TP
+.B \-\-canonicalize
+Let bare names such as
+.I mu2edaq09
+resolve to
+.IR mu2edaq09.fnal.gov .
+On by default.
+.TP
+.B \-\-controlmaster
+Reuse a single TCP connection for repeat logins to the same host. Off by
+default.
+.
+.SS Validation and output
+.TP
+.B \-\-no\-validate
+Skip running
+.B ssh \-G
+against the generated configuration.
+.TP
+.B \-\-no\-color
+Disable coloured output.
+.TP
+.B \-\-version
+Print the version and exit.
+.TP
+.BR \-h ", " \-\-help
+Print a usage summary and exit.
+.
+.SH SAFETY
+.B mu2e\-ssh\-setup
+does not silently replace an existing ssh configuration.
+.IP \(bu 3
+Any existing file that would change is copied to a timestamped backup directory
+before being replaced. Nothing is overwritten in place.
+.IP \(bu 3
+Existing files are listed, with size and modification time, before anything is
+written.
+.IP \(bu 3
+Interactively, the user is asked to confirm, and declining is the default. In
+.B \-\-batch
+mode the script exits with status 2 and changes nothing unless
+.B \-\-force
+is given.
+.IP \(bu 3
+.I config_other
+is created only if absent and is never overwritten, so personal host entries
+survive regeneration.
+.IP \(bu 3
+Re\-running with unchanged settings is a no\-op; the timestamp in the generated
+header is ignored when comparing, so no spurious backup is made.
+.IP \(bu 3
+Every referenced key file is checked for existence before anything is written.
+Keys that are group\- or world\-readable, or that appear to be public keys,
+produce a warning.
+.IP \(bu 3
+The result is parsed with
+.B ssh \-G
+before the script reports success.
+.
+.SH CONFIGURATION PRECEDENCE
+Settings are merged from four sources, each overriding the ones before it:
+.PP
+.RS 4
+built\-in defaults < \-\-config\-file < MU2E_SSH_* environment < command line
+.RE
+.
+.SH ENVIRONMENT
+.TP
+.B MU2E_SSH_*
+Any setting may be supplied as an environment variable named
+.B MU2E_SSH_
+followed by the uppercased setting name, for example
+.B MU2E_SSH_FNAL_USER
+or
+.BR MU2E_SSH_LAYOUT .
+.TP
+.B MU2E_SSH_PYTHON
+Consulted by the
+.IR mu2e\-ssh\-setup.sh ,
+.I .cmd
+and
+.I .ps1
+wrappers to select a specific Python interpreter.
+.TP
+.B NO_COLOR
+If set, disables coloured output, as does
+.BR \-\-no\-color .
+.
+.SH FILES
+Within the
+.I Bootstrap/ssh
+directory of the mu2edaq distribution:
+.TP
+.I scripts/mu2e\-ssh\-setup.py
+The generator itself.
+.TP
+.IR scripts/mu2e\-ssh\-setup.sh ", " scripts/mu2e\-ssh\-setup.cmd ", " scripts/mu2e\-ssh\-setup.ps1
+Wrappers that locate a suitable Python interpreter and forward all arguments.
+Use the
+.I .sh
+wrapper on macOS and Linux, and either of the other two on Windows.
+.TP
+.I templates/*.template
+Source templates. Substitution tokens have the form
+.BR @@NAME@@ ;
+lines beginning with
+.B #@
+are template directives and never appear in the output. Located automatically
+relative to the script, so it may be invoked from any working directory.
+.TP
+.I examples/mu2e\-ssh\-setup.yaml
+Fully commented example configuration file.
+.TP
+.I ~/.ssh/config
+Main generated configuration.
+.TP
+.IR ~/.ssh/config_mu2edaq ", " ~/.ssh/config_mu2e_controlroom ", " ~/.ssh/config_mu2egpvm ", " ~/.ssh/config_novagpvm ", " ~/.ssh/config_dunegpvm ", " ~/.ssh/config_github
+Per\-group configurations, in
+.B include
+layout only.
+.TP
+.I ~/.ssh/config_other
+Reserved for the user's own entries. Never overwritten.
+.TP
+.I ~/.ssh/backup\-<timestamp>/
+Backups of files replaced by a previous run.
+.
+.SH EXIT STATUS
+.TP
+.B 0
+Success, or a dry run that completed.
+.TP
+.B 1
+Invalid arguments, missing templates, or
+.BR ssh (1)
+rejected the generated configuration.
+.TP
+.B 2
+Deliberate abort: existing files were found without
+.BR \-\-force ,
+or a referenced key file is missing.
+.TP
+.B 130
+Interrupted.
+.
+.SH EXAMPLES
+Answer the questions and preview the result without writing anything:
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-interactive \-\-dry\-run
+.fi
+.RE
+.PP
+Install for a named user, backing up whatever is present:
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-fnal\-user jdoe \\
+    \-\-key\-default ~/.ssh/keys/default/id_ed25519 \\
+    \-\-key\-github  ~/.ssh/keys/github/id_ed25519 \\
+    \-\-install
+.fi
+.RE
+.PP
+See exactly what would change before committing to it:
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-fnal\-user jdoe \-\-dry\-run \-\-diff
+.fi
+.RE
+.PP
+Produce a single self\-contained file for a client that cannot follow
+.BR Include :
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-fnal\-user jdoe \-\-layout monolithic \-\-install
+.fi
+.RE
+.PP
+Control room shifter who does not need DAQ access:
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-fnal\-user jdoe \-\-groups controlroom \-\-install
+.fi
+.RE
+.PP
+An offline analyst who wants only the interactive nodes, across all three
+experiments:
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-fnal\-user jdoe \\
+    \-\-groups mu2egpvm,novagpvm,dunegpvm,github \-\-install
+.fi
+.RE
+.PP
+Unattended installation from a shared configuration file:
+.PP
+.RS 4
+.nf
+mu2e\-ssh\-setup \-\-config\-file /nfs/mu2e/site\-ssh.yaml \\
+    \-\-batch \-\-force \-\-install
+.fi
+.RE
+.
+.SH SEE ALSO
+.BR ssh (1),
+.BR ssh_config (5),
+.BR ssh\-keygen (1),
+.BR ssh\-agent (1),
+.BR ssh\-add (1),
+.BR kinit (1)
+.PP
+.I Bootstrap/ssh/SSH\-HOWTO.md
+in the mu2edaq distribution contains the narrative documentation, including
+platform notes and troubleshooting.
+.
+.SH AUTHOR
+Mu2e DAQ group, Fermi National Accelerator Laboratory.

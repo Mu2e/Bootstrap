@@ -1,0 +1,36 @@
+#@ ---------------------------------------------------------------------------
+#@ NOvA offline GPVM nodes.  Kerberos-only, same rules as the Mu2e gpvms.
+#@
+#@ novagpvm01..12 is a two-digit range, so "novagpvm??" would also work and be
+#@ slightly tighter.  The trailing * is used instead for consistency with the
+#@ other gpvm groups and so that a novagpvm13 added next year still matches.
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# NOvA offline GPVM nodes
+#
+# General purpose VMs for NOvA offline analysis:
+#
+#     novagpvm01.fnal.gov ... novagpvm12.fnal.gov
+#
+# Kerberos is required.  Note that your NOvA account is the same Fermilab
+# services principal as everything else:
+#
+#     kinit @@KERBEROS_PRINCIPAL@@
+#     ssh novagpvm01
+# ---------------------------------------------------------------------------
+
+Host novagpvm*
+        User @@FNAL_USER@@
+
+        GSSAPIAuthentication    yes
+        GSSAPIDelegateCredentials yes
+        GSSAPIRenewalForcesRekey yes
+        PreferredAuthentications gssapi-with-mic,gssapi-keyex,keyboard-interactive
+
+        # Not forwarded: shared multi-user machine.  See the comment in the Mu2e
+        # gpvm section for the reasoning.
+        ForwardAgent            no
+#@if x11
+        ForwardX11              yes
+        ForwardX11Trusted       yes
+#@endif

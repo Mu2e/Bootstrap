@@ -1,0 +1,40 @@
+#@ ---------------------------------------------------------------------------
+#@ Git hosting: GitHub and the Fermilab GitLab instance (hepcloud-git).
+#@
+#@ github.com always authenticates as the SSH user "git" regardless of your
+#@ GitHub account name -- your identity comes from the key, not the username.
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Git hosting
+# ---------------------------------------------------------------------------
+
+# GitHub.  The SSH user is always "git"; the key identifies you as
+# @@GITHUB_USER@@.  Test with:  ssh -T git@github.com
+Host github.com
+        HostName github.com
+        User git
+        PreferredAuthentications publickey
+        IdentityFile @@KEY_GITHUB@@
+        IdentitiesOnly yes
+        AddKeysToAgent yes
+#@if keychain
+        # Covered by the IgnoreUnknown at the top of the main config.
+        UseKeychain yes
+#@endif
+        ForwardX11 no
+        ForwardAgent no
+
+# Fermilab GitLab
+Host hepcloud-git.fnal.gov
+        HostName hepcloud-git.fnal.gov
+        User @@FNAL_USER@@
+        PreferredAuthentications publickey
+        IdentityFile @@KEY_FNAL@@
+        IdentitiesOnly yes
+        AddKeysToAgent yes
+#@if keychain
+        # Covered by the IgnoreUnknown at the top of the main config.
+        UseKeychain yes
+#@endif
+        ForwardX11 no
+        ForwardAgent no

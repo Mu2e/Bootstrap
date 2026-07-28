@@ -1,0 +1,65 @@
+#@ ---------------------------------------------------------------------------
+#@ Mu2e DAQ host group -- expert / DAQ-account access to MC-2 and the test
+#@ stands.  Included from config as ~/.ssh/config_mu2edaq (include layout) or
+#@ inlined directly (monolithic layout).
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Mu2e DAQ machines
+#
+# All of these are reached through a gateway; the ProxyJump entries below do
+# the hop for you, so "ssh mu2e-mgr-01" just works from off site.
+# ---------------------------------------------------------------------------
+
+##############################
+# Gateway machines for the MC-2 DAQ room (mu2egateway01 / mu2egateway02)
+Host mu2egateway*
+        User @@DAQ_ACCOUNT@@
+
+# Gateway machines for the Edwards Center (IERC) test stands
+Host mu2edaq-gateway*
+        User @@DAQ_ACCOUNT@@
+
+##############################
+# IERC test-stand machines
+Host mu2edaq04.fnal.gov mu2edaq07.fnal.gov mu2edaq09.fnal.gov mu2edaq10.fnal.gov mu2edaq11.fnal.gov mu2edaq13.fnal.gov mu2edaq14.fnal.gov mu2edaq22.fnal.gov
+        User @@DAQ_ACCOUNT@@
+        ProxyJump @@IERC_PROXYJUMP@@
+
+##############################
+# Mu2e MC-2 DAQ room machines
+
+# Main DAQ manager node in MC-2
+Host mu2e-mgr-01.fnal.gov
+        User @@DAQ_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@
+
+# Tracker nodes
+Host mu2e-trk*.fnal.gov
+        User @@DAQ_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@
+
+# Calorimeter nodes
+Host mu2e-calo*.fnal.gov
+        User @@DAQ_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@
+
+# Data logger nodes
+Host mu2e-dl-*.fnal.gov
+        User @@DAQ_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@
+
+# CFO nodes
+Host mu2e-cfo*.fnal.gov
+        User @@DAQ_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@
+
+# DCS nodes
+Host mu2e-dcs-*.fnal.gov
+        User @@DCS_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@
+
+##############################
+# Mu2e MC-1 control room nodes
+Host mu2e-mc1-cr-*
+        User @@SHIFT_ACCOUNT@@
+        ProxyJump @@MC2_GATEWAY@@

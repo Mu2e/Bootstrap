@@ -1,0 +1,23 @@
+#@ ---------------------------------------------------------------------------
+#@ Scratch file for the user's own host entries.  mu2e-ssh-setup creates this
+#@ only if it does not already exist, and never overwrites it.
+#@ ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Private host entries -- this file is yours.
+#
+# mu2e-ssh-setup created this file because it did not exist.  It will never
+# overwrite it, so anything you add here survives regenerating the rest of the
+# Mu2e configuration.
+#
+# Remember that ssh takes the FIRST value it finds for each keyword.  Because
+# this file is included last, a setting here will NOT override one made by an
+# earlier Mu2e host group.  If you need to override a Mu2e default, ask
+# mu2e-ssh-setup to put this file first (--user-config-first).
+#
+# Example:
+#
+# Host mylaptop
+#         HostName        192.168.1.20
+#         User            @@LOCAL_USER@@
+#         ForwardX11      no
+# ---------------------------------------------------------------------------

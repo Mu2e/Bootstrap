@@ -1,0 +1,124 @@
+# ---------------------------------------------------------------------------
+# mu2e-ssh-setup configuration
+#
+# Copy this file, edit it, and pass it with:
+#
+#     mu2e-ssh-setup --config-file my-ssh.yaml --dry-run
+#
+# Every key here has a matching command-line option (underscores become
+# dashes) and a matching environment variable (MU2E_SSH_ + the uppercase name).
+# Values are applied in this order, later winning over earlier:
+#
+#     built-in defaults  <  this file  <  MU2E_SSH_* environment  <  options
+#
+# Anything you leave out keeps its default, so a minimal file is just the two
+# settings under "Accounts" and "Key files" below.
+# ---------------------------------------------------------------------------
+
+# --- Accounts --------------------------------------------------------------
+
+# Your Fermilab services username. Required.
+fnal_user: jdoe
+
+# Your GitHub username. Only used in a comment in the generated file, since
+# github.com always authenticates as the ssh user "git".
+# Default: same as fnal_user.
+github_user: jdoe
+
+# Shared accounts on the Mu2e machines. Change these only if the experiment
+# renames them.
+daq_account: mu2edaq
+shift_account: mu2eshift
+dcs_account: mu2edcs
+
+# --- Key files -------------------------------------------------------------
+#
+# Give the path to the PRIVATE key -- the file WITHOUT the .pub suffix.
+# mu2e-ssh-setup checks that each of these exists before writing anything.
+# ~ is expanded, as are environment variables such as $HOME or %USERPROFILE%.
+
+key_default: ~/.ssh/keys/default/id_ed25519
+
+# Optional. Both default to key_default if omitted.
+key_github: ~/.ssh/keys/github/id_ed25519
+key_fnal: ~/.ssh/keys/default/id_ed25519
+
+# --- Layout ----------------------------------------------------------------
+
+# include     -- ~/.ssh/config plus one file per host group, pulled in with the
+#                Include keyword. Needs OpenSSH 7.3+ (2016). Easier to update.
+# monolithic  -- a single self-contained ~/.ssh/config. Works with clients that
+#                do not understand Include, notably PuTTY and older
+#                Git-for-Windows builds.
+#
+# Default: include everywhere except Windows, where monolithic is safer.
+layout: include
+
+# Which host groups to write.
+#   mu2edaq      Mu2e DAQ machines: MC-2 room, IERC test stands, CFO/trk/calo
+#   controlroom  MC-1 control room shifter accounts
+#   mu2egpvm     Mu2e offline GPVMs, mu2egpvm01-07     (Kerberos only)
+#   novagpvm     NOvA offline GPVMs, novagpvm01-12     (Kerberos only)
+#   dunegpvm     DUNE offline GPVMs, dunegpvm01-16     (Kerberos only)
+#   github       GitHub and Fermilab GitLab (hepcloud-git)
+groups: [mu2edaq, mu2egpvm, github]
+
+# The mu2edaq and controlroom groups both match "Host mu2egateway*" but with
+# different accounts. ssh honours the first match, so if you enable both, this
+# picks the winner: "daq" or "shift".
+gateway_precedence: daq
+
+# In include layout, put config_other ahead of the Mu2e groups so that your own
+# entries take precedence over the Mu2e defaults. Off by default, because
+# ordering surprises are the most common way to break an ssh config.
+user_config_first: false
+
+# --- Paths -----------------------------------------------------------------
+
+# The ssh directory the generated files refer to. Default: ~/.ssh
+# ssh_dir: ~/.ssh
+
+# --- Host settings ---------------------------------------------------------
+
+mc2_gateway: mu2egateway01.fnal.gov
+ierc_gateway: mu2edaq-gateway.fnal.gov
+
+# Kerberos realm, used only to build the example "kinit you@REALM" line in the
+# comments of the gpvm files. It does not affect authentication itself, which
+# takes the realm from /etc/krb5.conf.
+kerberos_realm: FNAL.GOV
+
+# Domain appended to bare hostnames, so "ssh mu2edaq09" reaches
+# mu2edaq09.fnal.gov. Requires the canonicalize feature below.
+canonical_domain: fnal.gov
+
+# What to do about unknown or changed host keys:
+#   accept-new  trust the key the first time, refuse if it later changes
+#   ask         prompt for every unknown host
+#   yes         refuse anything not already in known_hosts
+#   no          never check. Convenient on a private test stand, but it also
+#               hides a man-in-the-middle attack. Not recommended.
+strict_host_key_checking: accept-new
+
+# --- Features --------------------------------------------------------------
+
+features:
+  # Store key passphrases in the macOS keychain. Ignored off macOS.
+  keychain: true
+
+  # Kerberos/GSSAPI to fnal.gov hosts. Leave on if you use kinit.
+  gssapi: true
+
+  # X11 forwarding, needed for the otsdaq GUI and DAQ Interface windows.
+  x11: true
+
+  # Forward your ssh agent to remote hosts, so you can hop onward from a
+  # gateway without copying keys there.
+  agent: true
+
+  # Let bare names like "mu2edaq09" resolve to mu2edaq09.fnal.gov.
+  canonicalize: true
+
+  # Reuse a single TCP connection for repeat logins to the same host. Much
+  # faster for successive commands, but leaves a socket in ~/.ssh/connections.
+  controlmaster: false
