@@ -8,8 +8,8 @@ macOS and Windows 11.
 ## Login scripts
 
 Files:
-1. dotfiles/.bash_profile
-1. dotfiles/.bashrc
+1. dotFiles/.bash_profile
+1. dotFiles/.bashrc
 
 For a discussion of these files, see
 [https://mu2ewiki.fnal.gov/wiki/Shells](https://mu2ewiki.fnal.gov/wiki/Shells).
@@ -17,8 +17,8 @@ For a discussion of these files, see
 ## Editor initialization scripts
 
 Files:
-1. dotfiles/.emacs
-1. dotfiles/.vimrc
+1. dotFiles/.emacs
+1. dotFiles/.vimrc
 
 For a discussion about what the recommended configurations do, see
 [https://mu2ewiki.fnal.gov/wiki/Editors](https://mu2ewiki.fnal.gov/wiki/Editors).
@@ -63,8 +63,8 @@ notes and troubleshooting, or `man ssh/man/man1/mu2e-ssh-setup.1` for the option
 ## gdb initialization scripts
 
 Files:
-1. dotfiles/.gdbinit
-1. dotfiles/.gdb_stl
+1. dotFiles/.gdbinit
+1. dotFiles/.gdb_stl
 
 For a discussion of debugging with gdb, see
 [https://mu2ewiki.fnal.gov/wiki/CodeDebugging#gdb](https://mu2ewiki.fnal.gov/wiki/CodeDebugging#gdb).
