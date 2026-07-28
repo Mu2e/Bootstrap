@@ -713,7 +713,7 @@ def run_interactive(settings, plat, ssh_dir):
             if pub.exists():
                 return ("%s does not exist, but %s does -- you probably want the "
                         "private key (drop the .pub)." % (path, pub))
-            return "%s does not exist. Type it again, or 'skip' to use it anyway." % path
+            return "%s does not exist. Type it again, type 'skip' to keep the previous value, or answer 'y' to use it anyway." % path
         return None
 
     def ask_key(label, current):
